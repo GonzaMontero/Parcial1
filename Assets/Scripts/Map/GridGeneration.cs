@@ -27,8 +27,8 @@ public class GridGeneration : MonoBehaviour
             }
         }
 
-        grid[GridUtils.PositionToIndex(new Vector2Int(1, 0))].currentState = GridSlot.SlotState.Obstacle;
-        grid[GridUtils.PositionToIndex(new Vector2Int(3, 1))].currentState = GridSlot.SlotState.Obstacle;
+        grid[GridUtils.PositionToIndex(new Vector2Int(1, 0))].currentState = SlotStates.Obstacle;
+        grid[GridUtils.PositionToIndex(new Vector2Int(3, 1))].currentState = SlotStates.Obstacle;
 
         grid[GridUtils.PositionToIndex(new Vector2Int(1, 1))].SetWeight(2);
         grid[GridUtils.PositionToIndex(new Vector2Int(1, 2))].SetWeight(2);

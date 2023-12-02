@@ -38,7 +38,7 @@ public class PathingAlternatives {
             {
                 if (currentSlot.adjacentPositionsID[i] != GridUtils.invalidPosition)
                 {
-                    if (grid[currentSlot.adjacentPositionsID[i]].currentState == GridSlot.SlotState.Ready) //if available we open it and add it to
+                    if (grid[currentSlot.adjacentPositionsID[i]].currentState == SlotStates.Ready) //if available we open it and add it to
                                                                                                            //the list of possible nodes
                     {
                         grid[currentSlot.adjacentPositionsID[i]].Open(currentSlot.ID, currentSlot.totalWeight);
@@ -47,7 +47,7 @@ public class PathingAlternatives {
                 }
             }
 
-            currentSlot.currentState = GridSlot.SlotState.Close; //close current slot and advance to the next one
+            currentSlot.currentState = SlotStates.Close; //close current slot and advance to the next one
             openSlotsID.Remove(currentSlot.ID);
             closedSlotsID.Add(currentSlot.ID);
         }

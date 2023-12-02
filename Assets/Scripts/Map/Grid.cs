@@ -3,21 +3,13 @@ using UnityEngine;
 
 public class GridSlot
 {
-    public enum SlotState
-    {
-        Open,
-        Close,
-        Ready,
-        Obstacle
-    }
-
     private int id;
     public int ID => id;
 
     public Vector2Int position;
     public List<int> adjacentPositionsID;
 
-    public SlotState currentState;
+    public SlotStates currentState;
     public int idOfOpener;
 
     public int weight = 1;
@@ -41,16 +33,16 @@ public class GridSlot
 
     public void Open(int IDOfOpener, int parentWeight)
     {
-        currentState = SlotState.Open;
+        currentState = SlotStates.Open;
         idOfOpener = IDOfOpener;
         totalWeight = parentWeight + weight;
     }
 
     public void Reset()
     {
-        if (currentState != SlotState.Obstacle)
+        if (currentState != SlotStates.Obstacle)
         {
-            currentState = SlotState.Ready;
+            currentState = SlotStates.Ready;
             idOfOpener = -1;
             weight = originalWeight;
         }

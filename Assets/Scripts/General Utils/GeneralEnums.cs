@@ -19,3 +19,11 @@ public enum MinerFlags
     OnIdle,
     _Count
 }
+
+public enum SlotStates
+{
+    Open,
+    Close,
+    Ready,
+    Obstacle
+}

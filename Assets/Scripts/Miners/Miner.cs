@@ -149,7 +149,7 @@ public class Miner : MonoBehaviour
                 {
                     if (map[id].position == buildings[k] && !mines.Contains(buildings[k]))
                     {
-                        map[id].currentState = GridSlot.SlotState.Obstacle;
+                        map[id].currentState = SlotStates.Obstacle;
                     }
                 }
 
