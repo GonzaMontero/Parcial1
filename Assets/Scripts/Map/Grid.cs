@@ -22,6 +22,9 @@ public class GridSlot
         this.position = position;
         adjacentPositionsID = GridUtils.GetAdjacentSlotIDs(position);
 
+        this.currentState = SlotStates.Ready;
+        idOfOpener = -1;
+
         originalWeight = weight;
     }
 

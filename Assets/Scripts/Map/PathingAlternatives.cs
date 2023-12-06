@@ -73,6 +73,7 @@ public class PathingAlternatives {
         {
             path.Add(currentSlot.position);
             currentSlot = grid[currentSlot.idOfOpener];
+            //Check on last path item
         }
 
         path.Add(currentSlot.position);
