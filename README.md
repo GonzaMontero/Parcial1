@@ -1,2 +1,2 @@
-# MonteroGonzalo_IA_Parcial1
+Gonzalo Montero - Este repositorio es la entrega del primer parcial de la materia Inteligencia Artificial dictada en Image Campus de la Tecnicatura superior en Desarrollo de Videojuegos del año 2023
  
