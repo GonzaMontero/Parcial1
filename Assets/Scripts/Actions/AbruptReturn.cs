@@ -72,6 +72,7 @@ public class AbruptReturn : FSMAction
 
     public override void AbruptExit()
     {
-        throw new NotImplementedException();
+        reached = false;
+        path = null;
     }
 }

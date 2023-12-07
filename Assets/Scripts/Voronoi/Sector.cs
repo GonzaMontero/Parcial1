@@ -88,16 +88,7 @@ public class Sector
                         //intersectionPoint is closer to another mine's segment than to the current segment 
                         isBorder = false;
                         break;
-                    }
-                    
-                    // float distanceToSegment = Vector2.Distance(intersectionPoint, segments[k].mediatrix);
-                    // float distanceThreshold = (segments[k].weightOrigin + segments[k].weightEnd) * 0.5f;
-                    //
-                    // if (distanceToSegment < distanceThreshold * 0.5f)
-                    // {
-                    //     isBorder = false;
-                    //     break;
-                    // }
+                    }                   
                 }
 
                 //If still true
