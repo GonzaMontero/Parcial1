@@ -72,16 +72,12 @@ public class Sector
                 //Calculate maximum distance between intersectionPoint and the origin point of segment
                 //OriginPoint represents the starting point of the segment
                 float maxDistance = Vector2.Distance(intersectionPoint, segments[i].originPoint);
-
-                // float maxDistance = Vector2.Distance(intersectionPoint, segments[i].mediatrix) * segments[i].weightOrigin +
-                //     Vector2.Distance(intersectionPoint, segments[j].mediatrix) * segments[j].weightEnd;
-                
+              
                 bool isBorder = true;
                 for (int k = 0; k < segments.Count; k++)
                 {
                     if (k == i || k == j) continue;
 
-                    //Comparar si la distancia entre la intersección de las mediatrices y todas las demás minas es más pequeña que la distancia maxima 
                     //Checks if the distance between the intersectionPoint and the endpoint of  segment is less than the maximum distance
                     if (IsPositionCloser(intersectionPoint, segments[k].endPoint, maxDistance))
                     {
@@ -101,7 +97,7 @@ public class Sector
             }
         }
         
-        //If they dont have 2 intersections they are not part of theb order
+        //If they dont have 2 intersections they are not part of the order
         segments.RemoveAll((segment) => segment.intersections.Count != 2);
 
         SortIntersections();
@@ -204,7 +200,7 @@ public class Sector
             }
         }
 
-        //Sort the points by angle o have a list of intersection points that represents a polygon surrounding the sector
+        //Sort the points by angle or have a list of intersection points that represents a polygon surrounding the sector
         intersectionPoints = intersectionPoints.OrderBy(p => p.angle).ToList();
 
         intersections.Clear();

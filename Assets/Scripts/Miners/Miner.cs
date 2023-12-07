@@ -21,6 +21,7 @@ public class Miner : MonoBehaviour
     public bool updatePos;
     public bool updatePath = false;
 
+    //Generate FMS Relations and Mine Positions
     public void Init(Vector2Int deposit, Vector2Int rest, Vector2 currentPos, Func<float> onGetDeltaTime, Func<Vector2, Vector2Int> onGetMine,
         Action<Vector2Int> onEmptyMine, ref Action onUpdateWeight, List<Vector2Int> buildings, List<Vector2Int> mines)
     {

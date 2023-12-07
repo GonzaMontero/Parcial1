@@ -41,9 +41,9 @@ namespace Managers
             Parallel.ForEach(Miners, ParallelOptions, miner => { miner.UpdateMiner(); });
         }
 
-        public void UpdateWeight(Vector2Int nodePos, int nodeWeight)
+        public void UpdateWeight(Vector2Int gridSlot, int slotWeight)
         {
-            Parallel.ForEach(Miners, ParallelOptions, miner => { miner.UpdateWeight(nodePos, nodeWeight); });
+            Parallel.ForEach(Miners, ParallelOptions, miner => { miner.UpdateWeight(gridSlot, slotWeight); });
         }
 
         public void AbruptExit()

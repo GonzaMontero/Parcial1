@@ -20,6 +20,7 @@ namespace Managers
 
         private void Start()
         {
+            //On Start Generate positions for Miners, Mines, Deposit and Rest
             Vector2Int depositPosVec2 = new Vector2Int((int)DepositGOPrefab.transform.position.x, (int)DepositGOPrefab.transform.position.y);
             Vector2Int restPosVec2 = new Vector2Int((int)TownHallGOPrefab.transform.position.x, (int)TownHallGOPrefab.transform.position.y);
 
@@ -30,11 +31,13 @@ namespace Managers
 
         private void Update()
         {
+            //Update all miners depending on behavior
             MinerManager.UpdateMiners();
         }
 
         private void OnDrawGizmos()
         {
+            //Draw Spheres for Nodes
             if (MapManager.Map == null)
                 return;
 
@@ -49,6 +52,7 @@ namespace Managers
 
         public void SpawnMiner()
         {
+            //Spawns Miners on Position and assigns them methods
             var go = Instantiate(MinerGOPrefab, MapManager.MinerSpawnPosition, Quaternion.identity, transform);
             var miner = go.GetComponent<Miner>();
             miner.Init(MapManager.DepositPos, MinerManager.RestPosition, miner.transform.position, 
@@ -59,11 +63,14 @@ namespace Managers
 
         private float GetDeltaTime()
         {
+            //Get current miner time
             return MinerManager.DeltaTime;
         }
 
         private void OnEmptyMine(Vector2Int minePos)
         {
+            //When mines is empty remove them and update path and voronoi with new data
+
             Vector2Int pos;
             for (int i = 0; i < MapManager.MinesList.Count; i++)
             {
@@ -91,6 +98,7 @@ namespace Managers
 
         private Vector2Int GetMine()
         {
+            //Return random mine
             int index = Random.Range(0, MapManager.MinesList.Count);
 
             Vector2Int pos = new Vector2Int((int)MapManager.MinesList[index].transform.position.x, 
@@ -101,6 +109,7 @@ namespace Managers
 
         private Vector2Int GetMine(Vector2 minerPos)
         {
+            //Return nearest mine
             return MapManager.VoronoiHandler.GetNearestMine(minerPos);
         }
     }

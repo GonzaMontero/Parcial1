@@ -9,11 +9,9 @@ public class State
 
 public class FSM
 {
-    #region PRIVATE_FIELDS
     private int currentState;
     private int[,] relations;
     private Dictionary<int, State> behaviours;
-    #endregion
 
     public FSM(int states, int flags)
     {
