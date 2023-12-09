@@ -1,23 +1,17 @@
 public enum MinerStates
 {
-    Mining,
-    GoToMine,
-    GoToDeposit,
-    Idle,
-    GoToRest,
-    _Count
+    Mine,
+    Return,
+    Collect
 }
 
 public enum MinerFlags
 {
-    OnFullInventory,
-    OnReachMine,
-    OnReachDeposit,
-    OnEmptyMine,
-    OnAbruptReturn,
-    OnGoBackToWork,
-    OnIdle,
-    _Count
+    OnFindTarget,
+    OnNearTarget,
+    OnInventoryFull,
+    OnMineDepleted,
+    OnEmergency
 }
 
 public enum SlotStates

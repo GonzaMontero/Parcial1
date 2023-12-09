@@ -1,130 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-public class State
+namespace AI.FSM
 {
-    public List<FSMAction> behaviours;
-    public Action onAbruptExit;
-}
-
-public class FSM
-{
-    private int currentState;
-    private int[,] relations;
-    private Dictionary<int, State> behaviours;
-
-    public FSM(int states, int flags)
+    public class FSMParameters
     {
-        currentState = -1;
+        //Assistant class that lets us pass parameters easily (and store them) when entering a state (instead of sending 500 refs)
+        public object[] Parameters { get; set; }
+    }
 
-        relations = new int[states, flags];
-        for (int i = 0; i < states; i++)
+    public class FSM
+    {
+        private int currentState;
+
+        private Dictionary<int, FSMAction> states;
+        private Dictionary<int, FSMParameters> onEnterParameters; //Stores all parameters needed when entering a new state
+        private Dictionary<int, FSMParameters> onExecuteParameters; //Stores all parameters needed when executing a state
+        private Dictionary<int, FSMParameters> onExitParameters; //Stores all parameters needed when exiting a state
+
+        private int[,] relations;
+
+        public FSM(int states, int flags)
         {
-            for (int j = 0; j < flags; j++)
+            currentState = -1;
+
+            relations = new int[states, flags];
+            for (int i = 0; i < states; i++)
             {
-                relations[i, j] = -1;
+                for (int j = 0; j < flags; j++)
+                {
+                    relations[i, j] = -1;
+                }
+            }
+
+            this.states = new Dictionary<int, FSMAction>();
+            onEnterParameters = new Dictionary<int, FSMParameters>();
+            onExecuteParameters = new Dictionary<int, FSMParameters>();
+            onExitParameters = new Dictionary<int, FSMParameters>();
+        }
+
+        public FSM()
+        {
+        }
+
+        public void ForceCurrentState(int state)
+        {
+            currentState = state;
+
+            foreach (Action OnEnterAction in states[currentState].OnEnterBehaviours(onEnterParameters[currentState]))
+                OnEnterAction?.Invoke();
+        }
+
+        public void SetRelation(int sourceState, int flag, int destinationState)
+        {
+            relations[sourceState, flag] = destinationState;
+        }
+
+        public void SetFlag(int flag)
+        {
+            if (relations[currentState, flag] != -1)
+            {
+                foreach (Action OnExitAction in states[currentState].OnExitBehaviours(onEnterParameters[currentState]))
+                    OnExitAction?.Invoke();
+
+                currentState = relations[currentState, flag];
+
+                foreach (Action OnEnterAction in states[currentState].OnEnterBehaviours(onEnterParameters[currentState]))
+                    OnEnterAction?.Invoke();
             }
         }
 
-        behaviours = new Dictionary<int, State>();
-    }
-
-    public void ForceCurrentState(int state)
-    {
-        currentState = state;
-    }
-
-    public void SetRelation(int sourceState, int flag, int destinationState)
-    {
-        relations[sourceState, flag] = destinationState;
-    }
-
-    public void SetFlag(int flag)
-    {
-        if (relations[currentState, flag] != -1)
+        public void SetAction<T>(int stateIndex, FSMParameters onExecuteParams, FSMParameters onEnterParams,
+            FSMParameters onExitParams) where T : FSMAction, new()
         {
-            currentState = relations[currentState, flag];
-        }
-    }
-
-    public int GetCurrentState()
-    {
-        return currentState;
-    }
-
-    public void SetBehaviour(int state, FSMAction behaviour, Action onAbruptExit = null)
-    {
-        State newState = new State
-        {
-            behaviours = new List<FSMAction> { behaviour },
-            onAbruptExit = onAbruptExit
-        };
-        List<FSMAction> newBehaviours = new List<FSMAction> { behaviour };
-
-        if (behaviours.ContainsKey(state))
-        {
-            behaviours[state] = newState;
-        }
-        else
-        {
-            behaviours.Add(state, newState);
-        }
-    }
-
-    public void AddBehaviour(int state, FSMAction behaviour, Action onAbruptExit = null)
-    {
-        if (behaviours.ContainsKey(state))
-        {
-            behaviours[state].behaviours.Add(behaviour);
-        }
-        else
-        {
-            State newState = new State
+            if (states.ContainsKey(stateIndex))
             {
-                behaviours = new List<FSMAction> { behaviour },
-                onAbruptExit = onAbruptExit
-            };
-
-            behaviours.Add(state, newState);
+                FSMAction newAction = new T();
+                newAction.OnSetFlag += SetFlag;
+                states.Add(stateIndex, newAction);
+                onEnterParameters.Add(stateIndex, onEnterParams);
+                onExecuteParameters.Add(stateIndex, onExecuteParams);
+                onExitParameters.Add(stateIndex, onExitParams);
+            }
         }
-    }
 
-    public void Exit()
-    {
-        if (behaviours.ContainsKey(currentState))
+        public void Update()
         {
-            List<FSMAction> actions = behaviours[currentState].behaviours;
-            if (actions != null)
+            if (states.ContainsKey(currentState))
             {
-                for (int i = 0; i < actions.Count; i++)
+                foreach(Action OnExecute in states[currentState].OnExecuteBehaviours(onExecuteParameters[currentState]))
                 {
-                    if (actions[i] != null)
-                    {
-                        actions[i].AbruptExit();
-                    }
-                }
-            }            
-            
-            Action onExit = behaviours[currentState].onAbruptExit;
-            onExit?.Invoke();
-        }
-    }
-
-    public void Update()
-    {
-        if (behaviours.ContainsKey(currentState))
-        {
-            List<FSMAction> actions = behaviours[currentState].behaviours;
-            if (actions != null)
-            {
-                for (int i = 0; i < actions.Count; i++)
-                {
-                    if (actions[i] != null)
-                    {
-                        actions[i].Execute();
-                    }
+                    OnExecute?.Invoke();
                 }
             }
+        }
+
+        public int GetCurrentState()
+        {
+            return currentState;
         }
     }
 }

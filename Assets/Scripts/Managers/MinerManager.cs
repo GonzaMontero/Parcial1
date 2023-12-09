@@ -1,55 +1,71 @@
-using JetBrains.Annotations;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using AI.Entities;
+using AI.Voronoi;
+using System.Collections.Generic;
 
-namespace Managers
+namespace AI.Managers
 {
+    [System.Serializable]
+    public class PopulationType
+    {
+        public string PopulationName;
+        public VoronoiHandler PopulationVoronoiHandler;
+        public GameObject PopulationPrefab;
+        public ConcurrentBag<AIEntity> PopulationBag;
+        public int PopulationCount;
+    }
+
     public class MinerManager : MonoBehaviour
     {
-        public ConcurrentBag<Miner> Miners = new();
+        public static MinerManager Instance;
+
+        public List<PopulationType> PopulationTypes;
         public ParallelOptions ParallelOptions;
+
+        public static Action OnReturnToBaseCalled;
+
         public Vector2Int DepositPosition;
-        public Vector2Int RestPosition;
-        public float DeltaTime;
-        public Action OnUpdateWeight;
 
-        public void Init(Vector2Int depositPosition, Vector2Int restPosition)
+        bool returnToBase = false;
+
+        public void Awake()
         {
-            ParallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 6 };
-
-            DepositPosition = depositPosition;
-            RestPosition = restPosition;
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(this.gameObject);
         }
 
-        public void UpdateMiners()
+        public void Start()
         {
-            DeltaTime -= Time.deltaTime;
+            ParallelOptions = new ParallelOptions();
+            ParallelOptions.MaxDegreeOfParallelism = 6;
 
-            foreach (var miner in Miners)
+            MineItem.OnMineDrained += (bool areMinesLeft, bool areWorkingMinesLeft) =>
             {
-                if (miner.updatePos)
+                Debug.Log("AYYYY");
+            };
+        }
+
+        public void Update()
+        {
+            for(short i=0; i<PopulationTypes.Count; i++)
+            {
+                Parallel.ForEach(PopulationTypes[i].PopulationBag, ParallelOptions, currentPopulation =>
                 {
-                    miner.transform.position = miner.CurrentPos;
-                    miner.updatePos = false;
-                }
+                    currentPopulation.Update();
+                });
             }
-
-            Parallel.ForEach(Miners, ParallelOptions, miner => { miner.UpdateMiner(); });
         }
 
-        public void UpdateWeight(Vector2Int gridSlot, int slotWeight)
+        public void SetReturnToBase(bool shouldReturn)
         {
-            Parallel.ForEach(Miners, ParallelOptions, miner => { miner.UpdateWeight(gridSlot, slotWeight); });
+            returnToBase = !shouldReturn;
+            OnReturnToBaseCalled();
         }
-
-        public void AbruptExit()
-        {
-            Parallel.ForEach(Miners, ParallelOptions, miner => { miner.ExitMiner(); });
-        }       
     }
 }
 

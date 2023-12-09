@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Managers
+namespace AI.Managers
 {
     public class MapManager : MonoBehaviour
     {
+        public List<MineItem> AllMinesOnMap;
+        public List<MineItem> AllWorkedMines;
 
         [Header("Other Handlers")]
         public VoronoiHandler VoronoiHandler;
