@@ -1,90 +1,104 @@
 using System.Collections.Generic;
-
 using UnityEngine;
+using AI.Managers;
 
-public class VoronoiHandler : MonoBehaviour
+namespace AI.Voronoi
 {
-    #region EXPOSED_FIELDS
-    public float alpha = 0;
-    #endregion
-    
-    #region PRIVATE_FIELDS
-    private List<Edge> edges = new List<Edge>();
-    private List<Sector> sectors = new List<Sector>();
-    #endregion
-
-    #region UNITY_CALLS
-    private void OnDrawGizmos()
+    public class VoronoiHandler
     {
-        if (sectors == null) return;
+        #region Cached Values
+        private List<int /*closest mine id*/> closestMineToNode;
 
-        foreach (var sector in sectors)
+        private List<Dictionary< int /* mine id*/, int /*cost to mine*/>> possiblePathCosts;
+
+        private List<Mines> allMinesOnMap => MapManager.Instance.AllMines;
+        private List<Mines> allWorkedMinesOnMap => MapManager.Instance.WorkedMines;
+
+        private PathingAlternatives pathingAlternatives;
+        #endregion
+
+        #region Villager Voronois
+        public void InitVillagerVoronoi()
         {
-            sector.DrawSector(alpha);
-            
-            sector.DrawSegments();
-        }
-    }
-    #endregion
+            closestMineToNode = new List<int>();
+            possiblePathCosts = new List<Dictionary< int , int>>();
 
-    #region PUBLIC_METHODS
-    public void Config()
-    {
-        //Configure initial values of voronoi diagram by creating 4 edges that represent it's boundaries (left, up, right, down)
-        edges.Add(new Edge(new Vector2(0, 0), DIR.LEFT));
-        edges.Add(new Edge(new Vector2(0f, GridUtils.GridSize.y), DIR.UP));
-        edges.Add(new Edge(new Vector2(GridUtils.GridSize.x, GridUtils.GridSize.y), DIR.RIGHT));
-        edges.Add(new Edge(new Vector2(GridUtils.GridSize.x, 0f), DIR.DOWN));
-    }
+            pathingAlternatives = new PathingAlternatives();
 
-    public void UpdateSectors(List<(Vector2,float)> mines)
-    {
-        sectors.Clear();
-        if (mines.Count == 0) return;
+            int id = 0;
+            int tempCheapestDomain = int.MaxValue;
+            int tempCheapestCost = int.MaxValue;
 
-        //Add mine sectors
-        foreach (var mine in mines)
-        {
-            sectors.Add(new Sector(mine.Item1));
-        }
+            int mineIndex = 0;
 
-        //Add segment limits
-        foreach (var mineSector in sectors)
-        {
-            mineSector.AddSegmentLimits(edges);
-        }
-
-        //Connect mines
-        for (int i = 0; i < mines.Count; i++)
-        {
-            for (int j = 0; j < mines.Count; j++)
+            for (short x = 0; x < GridUtils.GridSize.x; x++)
             {
-                if (i == j) continue;
+                for(short y = 0; y < GridUtils.GridSize.y; y++)
+                {
+                    tempCheapestDomain = int.MaxValue;
+                    tempCheapestCost = int.MaxValue;
 
-                sectors[i].AddSegment(mines[i].Item1, mines[j].Item1, mines[i].Item2, mines[j].Item2);
+                    for(short m = 0; m < allMinesOnMap.Count; m++)
+                    {
+                        mineIndex = GridUtils.PositionToIndex(allMinesOnMap[m].Position);
+
+                        pathingAlternatives.GetPath(MapManager.Instance.Map, MapManager.Instance.Map[id],
+                        MapManager.Instance.Map[mineIndex], out int totalCost);
+
+                        if(totalCost < tempCheapestCost)
+                        {
+                            tempCheapestCost = totalCost;
+                            tempCheapestDomain = mineIndex;
+                        }
+
+                        var dict = new Dictionary<int, int>();
+                        dict.Add(mineIndex, totalCost);
+
+                        possiblePathCosts.Add(dict);
+                    }
+
+                    closestMineToNode.Add(tempCheapestDomain);
+
+                    id++;
+                }
             }
         }
 
-        //Set intersections  for each sector
-        foreach (var mineSector in sectors)
+        public void UpdateVillagerVoronoi()
         {
-            mineSector.SetIntersections();
-        }
-    }
+            int id = 0;
 
-    public Vector2Int GetNearestMine(Vector2 currentPos)
-    {
-        if (sectors == null) return Vector2Int.zero;
-        
-        foreach (var sector in sectors)
-        {
-            if (sector.IsPointInSector(currentPos))
+            int tempCheapestDomain = int.MaxValue;
+            int tempCheapestCost = int.MaxValue;
+
+            int mineIndex = 0;
+
+            for (short x = 0; x < GridUtils.GridSize.x; x++)
             {
-                return new Vector2Int((int)sector.minePos.x, (int)sector.minePos.y);
+                for (short y = 0; y < GridUtils.GridSize.y; y++)
+                {
+                    tempCheapestDomain = int.MaxValue;
+                    tempCheapestCost = int.MaxValue;
+
+                    for (short m = 0; m < allMinesOnMap.Count; m++)
+                    {
+                        mineIndex = GridUtils.PositionToIndex(allMinesOnMap[m].Position);
+
+                        possiblePathCosts[id].TryGetValue(mineIndex, out int totalCost);
+
+                        if (totalCost < tempCheapestCost)
+                        {
+                            tempCheapestCost = totalCost;
+                            tempCheapestDomain = mineIndex;
+                        }
+                    }
+
+                    closestMineToNode[id] = tempCheapestDomain;
+
+                    id++;
+                }
             }
         }
-
-        return Vector2Int.zero;
+        #endregion
     }
-    #endregion
 }
