@@ -56,14 +56,14 @@ namespace AI.Managers
             {
                 Parallel.ForEach(PopulationTypes[i].PopulationBag, ParallelOptions, currentPopulation =>
                 {
-                    currentPopulation.Update();
+                    currentPopulation.UpdateMiner();
                 });
             }
         }
 
         public void SetReturnToBase(bool shouldReturn)
         {
-            returnToBase = !shouldReturn;
+            ReturnToBase = !shouldReturn;
             OnReturnToBaseCalled();
         }
     }

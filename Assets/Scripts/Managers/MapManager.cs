@@ -12,9 +12,6 @@ namespace AI.Managers
 
         public static MapManager Instance;
 
-        [Header("Other Handlers")]
-        public VoronoiHandler VoronoiHandler;
-
         [Header("Points of Interest & Map Settings")]
         public Vector3Int MinerSpawnPosition;
         public int MinesCount;
@@ -47,8 +44,6 @@ namespace AI.Managers
         {
             InitBuildings();
             InitMap(mapSize);
-
-            VoronoiHandler.Config();
 
             for (int i = 0; i < MinesCount; i++)
             {
@@ -138,7 +133,6 @@ namespace AI.Managers
                 float weight = Random.Range(1, 6);
                 minesPos.Add((mine.transform.position, weight));
             }
-            VoronoiHandler.UpdateSectors(minesPos);
         } 
     }
 }

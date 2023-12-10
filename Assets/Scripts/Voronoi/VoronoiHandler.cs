@@ -11,14 +11,13 @@ namespace AI.Voronoi
 
         private List<Dictionary< int /* mine id*/, int /*cost to mine*/>> possiblePathCosts;
 
-        private List<Mines> allMinesOnMap => MapManager.Instance.AllMines;
-        private List<Mines> allWorkedMinesOnMap => MapManager.Instance.WorkedMines;
+        private List<MineItem> allMinesOnMap => MapManager.Instance.AllMinesOnMap;
+        private List<MineItem> allWorkedMinesOnMap => MapManager.Instance.AllWorkedMines;
 
         private PathingAlternatives pathingAlternatives;
         #endregion
 
-        #region Villager Voronois
-        public void InitVillagerVoronoi()
+        public void SetupVoronoi(List<MineItem> minesToSector)
         {
             closestMineToNode = new List<int>();
             possiblePathCosts = new List<Dictionary< int , int>>();
@@ -38,9 +37,10 @@ namespace AI.Voronoi
                     tempCheapestDomain = int.MaxValue;
                     tempCheapestCost = int.MaxValue;
 
-                    for(short m = 0; m < allMinesOnMap.Count; m++)
+                    for(short m = 0; m < minesToSector.Count; m++)
                     {
-                        mineIndex = GridUtils.PositionToIndex(allMinesOnMap[m].Position);
+                        mineIndex = GridUtils.PositionToIndex(new Vector2Int((int)minesToSector[m].transform.position.x, 
+                            (int)minesToSector[m].transform.position.y));
 
                         pathingAlternatives.GetPath(MapManager.Instance.Map, MapManager.Instance.Map[id],
                         MapManager.Instance.Map[mineIndex], out int totalCost);
@@ -64,7 +64,7 @@ namespace AI.Voronoi
             }
         }
 
-        public void UpdateVillagerVoronoi()
+        public void UpdateActiveVoronoi(List<MineItem> minesToCheck)
         {
             int id = 0;
 
@@ -80,9 +80,10 @@ namespace AI.Voronoi
                     tempCheapestDomain = int.MaxValue;
                     tempCheapestCost = int.MaxValue;
 
-                    for (short m = 0; m < allMinesOnMap.Count; m++)
+                    for (short m = 0; m < minesToCheck.Count; m++)
                     {
-                        mineIndex = GridUtils.PositionToIndex(allMinesOnMap[m].Position);
+                        mineIndex = GridUtils.PositionToIndex(new Vector2Int((int)minesToCheck[m].transform.position.x, 
+                            (int)minesToCheck[m].transform.position.y)); ;
 
                         possiblePathCosts[id].TryGetValue(mineIndex, out int totalCost);
 
@@ -99,6 +100,10 @@ namespace AI.Voronoi
                 }
             }
         }
-        #endregion
+
+        public int GetClosestMine(int id)
+        {
+            return closestMineToNode[id];
+        }
     }
 }

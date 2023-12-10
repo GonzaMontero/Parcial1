@@ -4,6 +4,7 @@ using UnityEngine;
 using AI.FSM;
 using AI.Managers;
 using System;
+using AI.Entities;
 
 public class ReturnToBase : FSMAction
 {
@@ -12,16 +13,18 @@ public class ReturnToBase : FSMAction
 
     public override List<Action> OnEnterBehaviours(FSMParameters onEnterParameters)
     {
-        Func<Vector2Int> currentPos = onEnterParameters.Parameters[0] as Func<Vector2Int>;
-        Func<Vector2Int> baseHome = onEnterParameters.Parameters[8] as Func<Vector2Int>;
-        PathingAlternatives alternatives = new PathingAlternatives();
+        EntityData currentData = onEnterParameters.Parameters[0] as EntityData;
+        Vector2Int currentPos = currentData.Position;
+        Vector2Int baseHome = currentData.Deposit;
+
+        PathingAlternatives alternatives = onEnterParameters.Parameters[3] as PathingAlternatives;
 
         List<Action> onEnterActions = new List<Action>();
         onEnterActions.Add(() =>
         {
             onEnterParameters.Parameters[4] = alternatives.GetPath(MapManager.Instance.Map, 
-                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos.Invoke())], 
-                MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome.Invoke())]);
+                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos)], 
+                MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
         });
 
         return onEnterActions;
@@ -29,12 +32,14 @@ public class ReturnToBase : FSMAction
 
     public override List<Action> OnExecuteBehaviours(FSMParameters onExecuteParameters)
     {
-        Func<Vector2Int> currentPos = onExecuteParameters.Parameters[0] as Func<Vector2Int>;
-        Func<Vector2Int> baseHome = onExecuteParameters.Parameters[1] as Func<Vector2Int>;
+        EntityData currentData = onExecuteParameters.Parameters[0] as EntityData;
+        Vector2Int currentPos = currentData.Position;
+        Vector2Int baseHome = currentData.Deposit;
+        bool shouldCalculatePathAgain = currentData.shouldPathAgain;
+
         FlockingAlgorithm flocking = onExecuteParameters.Parameters[2] as FlockingAlgorithm;
         PathingAlternatives alternatives = onExecuteParameters.Parameters[3] as PathingAlternatives;
-        List<Vector2Int> path = onExecuteParameters.Parameters[4] as List<Vector2Int>;       
-        Func<bool> shouldCalculatePathAgain = onExecuteParameters.Parameters[5] as Func<bool>;
+        List<Vector2Int> path = onExecuteParameters.Parameters[4] as List<Vector2Int>;
 
 
         List<Action> onExecuteActions = new List<Action>();
@@ -43,8 +48,8 @@ public class ReturnToBase : FSMAction
             if (path == null)
             {
                 path = alternatives.GetPath(MapManager.Instance.Map,
-                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos.Invoke())],
-                MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome.Invoke())]);
+                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos)],
+                MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
 
                 positionOnPath = 0;
 
@@ -56,17 +61,16 @@ public class ReturnToBase : FSMAction
 
                 currentDestination = new Vector3(path[positionOnPath].x, path[positionOnPath].y, 0);
 
-
                 flocking.ToggleFlocking(true);
                 flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
             }
-            else if (Vector2.Distance(currentDestination,currentPos.Invoke()) < 0.1f)
+            else if (Vector2.Distance(currentDestination,currentPos) < 0.1f)
             {
-                if (shouldCalculatePathAgain.Invoke())
+                if (shouldCalculatePathAgain)
                 {
                     path = alternatives.GetPath(MapManager.Instance.Map,
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos.Invoke())],
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome.Invoke())]);
+                    MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos)],
+                    MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
 
                     positionOnPath = 0;
 

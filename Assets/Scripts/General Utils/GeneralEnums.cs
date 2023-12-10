@@ -12,7 +12,7 @@ public enum MinerFlags
     OnInventoryFull,
     OnMineDepleted,
     OnEmergency,
-    OnReachDeposit;
+    OnReachDeposit
 }
 
 public enum SlotStates

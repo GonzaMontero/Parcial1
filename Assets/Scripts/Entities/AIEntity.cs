@@ -5,10 +5,18 @@ using UnityEngine;
 
 namespace AI.Entities
 {
+    public class EntityData
+    {
+        public bool shouldPathAgain;
+        public Vector2Int Position;
+        public Vector2Int Target;
+        public Vector2Int Deposit;
+        public MineItem targetMine;
+    }
+
     public abstract class AIEntity : MonoBehaviour
     {
-        protected Vector2Int Target;
-        protected Vector2Int TownHall;
+        protected EntityData data;
         protected FSM.FSM fsm;
         protected List<Vector2Int> Path;
         protected FSMParameters parameters;
@@ -19,7 +27,7 @@ namespace AI.Entities
             fsm = new FSM.FSM(stateLength, flagLength);
         }
 
-        protected virtual void Update()
+        public virtual void UpdateMiner()
         {
             fsm.Update();
         }

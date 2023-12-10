@@ -207,7 +207,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1309622554}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
         m_MethodName: SpawnMiner
         m_Mode: 1
@@ -889,7 +889,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1309622554}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
         m_MethodName: HeadToDeposit
         m_Mode: 1
@@ -949,7 +949,6 @@ GameObject:
   m_Component:
   - component: {fileID: 621568046}
   - component: {fileID: 621568048}
-  - component: {fileID: 621568047}
   m_Layer: 0
   m_Name: Map Manager
   m_TagString: Untagged
@@ -972,19 +971,6 @@ Transform:
   m_Father: {fileID: 1055073038}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &621568047
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 621568045}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4710e883cb59c04fafebff340f28644, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  alpha: 0
 --- !u!114 &621568048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -997,7 +983,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc41b45271afa144b88962342c2cbcfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VoronoiHandler: {fileID: 621568047}
+  AllMinesOnMap: []
+  AllWorkedMines: []
   MinerSpawnPosition: {x: 24, y: 24, z: 0}
   MinesCount: 15
   MapSize: {x: 50, y: 50}
@@ -1470,7 +1457,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1055073038}
-  - component: {fileID: 1055073039}
   m_Layer: 0
   m_Name: Managers Parent
   m_TagString: Untagged
@@ -1496,25 +1482,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1055073039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1055073037}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 624a01d9a3398654c82ac4eb5a85b6ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DepositGOPrefab: {fileID: 1961300174}
-  MinerGOPrefab: {fileID: 4248180729916858057, guid: bc23fb6b26dcb5849bad108f10b322f1, type: 3}
-  MineGOPrefab: {fileID: 3711067333260917421, guid: 6b6089b09cb31f44a810b74e7923bd06, type: 3}
-  TownHallGOPrefab: {fileID: 1591666527}
-  mapSize: {x: 50, y: 50}
-  MinerManager: {fileID: 1626456934}
-  MapManager: {fileID: 621568048}
 --- !u!1 &1102080888
 GameObject:
   m_ObjectHideFlags: 0
@@ -1835,7 +1802,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1309622553}
-  - component: {fileID: 1309622554}
   m_Layer: 0
   m_Name: UI Manager
   m_TagString: Untagged
@@ -1858,22 +1824,6 @@ Transform:
   m_Father: {fileID: 1055073038}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1309622554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309622552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 840bff1e79e7db846b6eec83ff6f54fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SimulationManager: {fileID: 1055073039}
-  WeighInput: {fileID: 779926492}
-  XInput: {fileID: 1891955883}
-  YInput: {fileID: 1222830938}
 --- !u!1 &1314036289
 GameObject:
   m_ObjectHideFlags: 0
@@ -2278,68 +2228,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1591666526
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 7618025556983166969, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_Name
-      value: Rest
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 49
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 49
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7618025556983166971, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
---- !u!1 &1591666527 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7618025556983166969, guid: 1931367cc5c3e84428ffa5b9db44958b, type: 3}
-  m_PrefabInstance: {fileID: 1591666526}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1626456933
 GameObject:
   m_ObjectHideFlags: 0
@@ -2369,9 +2257,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c29e9e5d5024744d80575937cec30a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DepositPosition: {x: 0, y: 0}
-  RestPosition: {x: 0, y: 0}
-  DeltaTime: 0
+  PopulationTypes:
+  - PopulationName: Miners
+    PopulationPrefab: {fileID: 4248180729916858057, guid: bc23fb6b26dcb5849bad108f10b322f1, type: 3}
+    PopulationCount: 15
+  DepositPosition: {x: 24, y: 24}
+  ReturnToBase: 0
 --- !u!4 &1626456935
 Transform:
   m_ObjectHideFlags: 0
@@ -2471,7 +2362,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1309622554}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
         m_MethodName: UpdateWeight
         m_Mode: 1
@@ -2978,11 +2869,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58dbd3b2cbe8aa9408a99af6896887aa, type: 3}
---- !u!1 &1961300174 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3701393968662632416, guid: 58dbd3b2cbe8aa9408a99af6896887aa, type: 3}
-  m_PrefabInstance: {fileID: 1961300173}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1969623544
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using AI.Entities;
 using AI.FSM;
 using AI.Managers;
 using System;
@@ -13,23 +14,23 @@ public class HeadToMine : FSMAction
 
     public override List<Action> OnEnterBehaviours(FSMParameters onEnterParameters)
     {
-        Func<Vector2Int> currentPos = onEnterParameters.Parameters[0] as Func<Vector2Int>;
-        Func<Vector2Int> target = onEnterParameters.Parameters[8] as Func<Vector2Int>;
-        PathingAlternatives alternatives = new PathingAlternatives();
+        EntityData data = onEnterParameters.Parameters[0] as EntityData;
+        PathingAlternatives alternatives = onEnterParameters.Parameters[2] as PathingAlternatives;
 
         List<Action> onEnterActions = new List<Action>();
         onEnterActions.Add(() =>
         {
 
-            MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.UpdateVillagerVoronoi();
-            //target = MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.GetClosestVoronoi();
-            onEnterParameters.Parameters[8] = target;
+            MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.UpdateActiveVoronoi(MapManager.Instance.AllMinesOnMap);
+            data.Target = MapManager.Instance.Map[MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.GetClosestMine(
+                GridUtils.PositionToIndex(data.Position))].position;
+            onEnterParameters.Parameters[0] = data;
 
             List<Vector2Int> pathToMine = new List<Vector2Int>();
 
-            //onEnterParameters.Parameters[4] = alternatives.GetPath(MapManager.Instance.Map,
-            //    MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos.Invoke())],
-            //    MapManager.Instance.Map[GridUtils.PositionToIndex(target)]);
+            onEnterParameters.Parameters[4] = alternatives.GetPath(MapManager.Instance.Map,
+                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int totalCost);
         });
 
         return onEnterActions;
@@ -37,12 +38,10 @@ public class HeadToMine : FSMAction
 
     public override List<Action> OnExecuteBehaviours(FSMParameters onExecuteParameters)
     {
-        Func<Vector2Int> currentPos = onExecuteParameters.Parameters[0] as Func<Vector2Int>;
-        Func<Vector2Int> target = onExecuteParameters.Parameters[8] as Func<Vector2Int>;
+        EntityData data = onExecuteParameters.Parameters[0] as EntityData;
         FlockingAlgorithm flocking = onExecuteParameters.Parameters[2] as FlockingAlgorithm;
         PathingAlternatives alternatives = onExecuteParameters.Parameters[3] as PathingAlternatives;
         List<Vector2Int> path = onExecuteParameters.Parameters[4] as List<Vector2Int>;
-        Func<bool> shouldCalculatePathAgain = onExecuteParameters.Parameters[5] as Func<bool>;
 
         List<Action> onExecuteBehaviours = new List<Action>();
 
@@ -51,8 +50,8 @@ public class HeadToMine : FSMAction
             if (path == null)
             {
                 path = alternatives.GetPath(MapManager.Instance.Map,
-                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos.Invoke())],
-                MapManager.Instance.Map[GridUtils.PositionToIndex(target.Invoke())]);
+                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int var);
 
                 positionOnPath = 0;
 
@@ -67,13 +66,13 @@ public class HeadToMine : FSMAction
                 flocking.ToggleFlocking(true);
                 flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
             }
-            else if(Vector2.Distance(currentDestination, currentPos.Invoke()) < 0.1f)
+            else if(Vector2.Distance(currentDestination, data.Position) < 0.1f)
             {
-                if (shouldCalculatePathAgain.Invoke())
+                if (data.shouldPathAgain)
                 {
                     path = alternatives.GetPath(MapManager.Instance.Map,
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos.Invoke())],
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(target.Invoke())]);
+                    MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                    MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int var);
 
                     positionOnPath = 0;
 
@@ -99,7 +98,6 @@ public class HeadToMine : FSMAction
                     }
 
                     currentDestination = new Vector3(path[positionOnPath].x, path[positionOnPath].y, 0);
-
 
                     flocking.ToggleFlocking(true);
                     flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));

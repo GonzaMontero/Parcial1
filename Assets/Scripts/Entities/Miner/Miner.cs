@@ -23,7 +23,6 @@ namespace AI.Entities
         public Vector2 CurrentPos;
         public Vector2Int CurrentMine;
         public bool updatePos;
-        public bool updatePath = false;
 
         protected override void Init(int stateLength, int flagLength)
         {
@@ -39,16 +38,14 @@ namespace AI.Entities
 
             parameters = new FSM.FSMParameters();
 
-            parameters.Parameters = new object[8]
+            parameters.Parameters = new object[6]
             {
-                GetPos(),
-                GetTownHall(),
+                data,
                 flockingMiners,
                 pathingAlternatives,
                 Path,
-                RePath(),
-                GetTarget(),
-                Target
+                timesMined,
+                resourcesMined
             };
 
             fsm.SetAction<ReturnToBase>((int)MinerStates.Return, parameters, parameters);
@@ -56,63 +53,20 @@ namespace AI.Entities
             fsm.SetAction<HeadToMine>((int)MinerStates.Collect, parameters, parameters);
         }
 
-        public void UpdateMiner()
+        public override void UpdateMiner()
         {
             fsm.Update();
         }
 
-        private void UpdatePos(Vector2 newPos)
-        {
-            updatePos = true;
-            CurrentPos = newPos;
-        }
-
-        private void UpdateTarget(Vector2Int newTarget)
-        {
-            flockingMiners.ToggleFlocking(true);
-            flockingMiners.UpdateTarget(newTarget);
-        }
-
-        private void StopMovement()
-        {
-            flockingMiners.ToggleFlocking(false);
-        }
-
-        private Vector2 GetPos()
-        {
-            return CurrentPos;
-        }
-
-        private Vector2Int GetTownHall()
-        {
-            return TownHall;
-        }
-
-        private Vector2Int GetTarget()
-        {
-            return Target;
-        }
-
-        public void UpdateMine(Vector2Int minePos)
-        {
-            CurrentMine = minePos;
-            updatePath = true;
-        }
-
-        private void OnEmptyMine()
-        {
-            updatePath = true;
-            onEmptyMine?.Invoke(CurrentMine);
-        }
+        //private void UpdatePos(Vector2 newPos)
+        //{
+        //    updatePos = true;
+        //    CurrentPos = newPos;
+        //}
 
         private void OnUpdateWeight()
         {
-            updatePath = true;
-        }
-
-        private bool RePath()
-        {
-            return updatePath;
+            data.shouldPathAgain = true;
         }
     }
 }

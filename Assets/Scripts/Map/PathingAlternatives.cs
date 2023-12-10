@@ -19,7 +19,7 @@ public class PathingAlternatives {
     private List<int> closedSlotsID = new List<int>();
     private Vector2Int destinationPosition;
 
-    public List<Vector2Int> GetPath(GridSlot[] grid, GridSlot origin, GridSlot destination)
+    public List<Vector2Int> GetPath(GridSlot[] grid, GridSlot origin, GridSlot destination, out int totalCost)
     {
         openSlotsID.Add(origin.ID);
         destinationPosition = destination.position;
@@ -31,6 +31,7 @@ public class PathingAlternatives {
 
             if(currentSlot == null) //if currentslot does not exist then the path by extension does not either
             {
+                totalCost = 0;
                 return new List<Vector2Int>();
             }
 
@@ -52,7 +53,8 @@ public class PathingAlternatives {
             closedSlotsID.Add(currentSlot.ID);
         }
 
-        List<Vector2Int> path = GeneratePath(grid, currentSlot); //generate a path with the closed slots and current position
+        totalCost = currentSlot.totalWeight;
+        List<Vector2Int> path = GeneratePath(grid, currentSlot); //generate a path with the closed slots and current position        
 
         //reset all slots and return the finished path
         foreach(GridSlot slot in grid)
