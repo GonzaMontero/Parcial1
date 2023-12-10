@@ -10,6 +10,8 @@ namespace AI.Managers
         public List<MineItem> AllMinesOnMap;
         public List<MineItem> AllWorkedMines;
 
+        public static MapManager Instance;
+
         [Header("Other Handlers")]
         public VoronoiHandler VoronoiHandler;
 

@@ -29,7 +29,7 @@ namespace AI.Managers
 
         public Vector2Int DepositPosition;
 
-        bool returnToBase = false;
+        public bool ReturnToBase = false;
 
         public void Awake()
         {

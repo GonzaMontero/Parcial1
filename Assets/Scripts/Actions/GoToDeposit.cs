@@ -33,6 +33,8 @@ public class GoToDeposit : FSMAction
     #region OVERRIDE
     public override void Execute()
     {
+        
+
         miner = onGetPos.Invoke();
 
         if (path == null)

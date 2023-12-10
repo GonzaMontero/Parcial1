@@ -71,8 +71,8 @@ namespace AI.FSM
             }
         }
 
-        public void SetAction<T>(int stateIndex, FSMParameters onExecuteParams, FSMParameters onEnterParams,
-            FSMParameters onExitParams) where T : FSMAction, new()
+        public void SetAction<T>(int stateIndex, FSMParameters onExecuteParams = null, FSMParameters onEnterParams = null,
+            FSMParameters onExitParams = null) where T : FSMAction, new()
         {
             if (states.ContainsKey(stateIndex))
             {

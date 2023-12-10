@@ -7,8 +7,8 @@ namespace AI.Entities
 {
     public abstract class AIEntity : MonoBehaviour
     {
-        protected GameObject Target;
-        protected GameObject TownHall;
+        protected Vector2Int Target;
+        protected Vector2Int TownHall;
         protected FSM.FSM fsm;
         protected List<Vector2Int> Path;
         protected FSMParameters parameters;
