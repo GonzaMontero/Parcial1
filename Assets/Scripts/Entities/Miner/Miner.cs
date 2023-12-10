@@ -24,11 +24,18 @@ namespace AI.Entities
         public Vector2Int CurrentMine;
         public bool updatePos;
 
-        protected override void Init(int stateLength, int flagLength)
+        public override void Init(Vector2Int position)
         {
             MinerManager.OnReturnToBaseCalled += () => fsm.ForceCurrentState((int)MinerStates.Return);
 
-            fsm = new FSM.FSM(stateLength, flagLength);
+            flockingMiners = GetComponent<FlockingAlgorithm>();
+            pathingAlternatives = new PathingAlternatives();
+
+            data = new EntityData();
+
+            data.Position = position;
+
+            fsm = new FSM.FSM(Enum.GetValues(typeof(MinerStates)).Length, Enum.GetValues(typeof(MinerFlags)).Length);
 
             fsm.SetRelation((int)MinerStates.Collect, (int)MinerFlags.OnNearTarget, (int)MinerStates.Mine);
             fsm.SetRelation((int)MinerStates.Mine, (int)MinerFlags.OnInventoryFull, (int)MinerStates.Return);
@@ -51,6 +58,10 @@ namespace AI.Entities
             fsm.SetAction<ReturnToBase>((int)MinerStates.Return, parameters, parameters);
 
             fsm.SetAction<HeadToMine>((int)MinerStates.Collect, parameters, parameters);
+
+            fsm.SetAction<MineState>((int)MinerStates.Mine, parameters, parameters);
+
+            fsm.ForceCurrentState((int)MinerStates.Collect);
         }
 
         public override void UpdateMiner()

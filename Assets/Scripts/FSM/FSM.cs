@@ -74,7 +74,7 @@ namespace AI.FSM
         public void SetAction<T>(int stateIndex, FSMParameters onExecuteParams = null, FSMParameters onEnterParams = null,
             FSMParameters onExitParams = null) where T : FSMAction, new()
         {
-            if (states.ContainsKey(stateIndex))
+            if (!states.ContainsKey(stateIndex))
             {
                 FSMAction newAction = new T();
                 newAction.OnSetFlag += SetFlag;

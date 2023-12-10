@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class MineItem : MonoBehaviour
 {
+    public Vector2Int MinePosition;
+
     public int FoodAmount = 20;
     public int MineralAmount = 20;
 

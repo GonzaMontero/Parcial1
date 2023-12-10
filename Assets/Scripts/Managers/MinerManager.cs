@@ -44,6 +44,20 @@ namespace AI.Managers
             ParallelOptions = new ParallelOptions();
             ParallelOptions.MaxDegreeOfParallelism = 6;
 
+            for(int i=0;i<PopulationTypes.Count;i++)
+            {
+                PopulationTypes[i].PopulationBag = new ConcurrentBag<AIEntity>();
+                PopulationTypes[i].PopulationVoronoiHandler = new VoronoiHandler();
+                PopulationTypes[i].PopulationVoronoiHandler.SetupVoronoi(MapManager.Instance.AllMinesOnMap);
+                for(short p = 0; p < PopulationTypes[i].PopulationCount; p++)
+                {
+                    var GO = Instantiate(PopulationTypes[i].PopulationPrefab, MapManager.Instance.MinerSpawnPosition, 
+                        Quaternion.identity, this.transform);
+                    GO.gameObject.GetComponent<Miner>().Init((Vector2Int)MapManager.Instance.MinerSpawnPosition);
+                    PopulationTypes[i].PopulationBag.Add(GO.gameObject.GetComponent<Miner>());
+                }
+            }
+
             MineItem.OnMineDrained += (bool areMinesLeft, bool areWorkingMinesLeft) =>
             {
                 Debug.Log("AYYYY");

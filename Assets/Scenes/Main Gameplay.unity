@@ -988,8 +988,10 @@ MonoBehaviour:
   MinerSpawnPosition: {x: 24, y: 24, z: 0}
   MinesCount: 15
   MapSize: {x: 50, y: 50}
+  MineItemPrefab: {fileID: 6094667908731484827, guid: 6b6089b09cb31f44a810b74e7923bd06, type: 3}
   MinesParents: {fileID: 1499411615}
   WallParent: {fileID: 1914546537}
+  DepositPos: {x: 0, y: 0}
 --- !u!1 &667696940
 GameObject:
   m_ObjectHideFlags: 0

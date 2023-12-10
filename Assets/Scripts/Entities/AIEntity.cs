@@ -12,6 +12,14 @@ namespace AI.Entities
         public Vector2Int Target;
         public Vector2Int Deposit;
         public MineItem targetMine;
+
+        public EntityData()
+        {
+            shouldPathAgain = false;
+            Position = new Vector2Int();
+            Target = new Vector2Int();
+            Deposit = new Vector2Int();
+        }
     }
 
     public abstract class AIEntity : MonoBehaviour
@@ -21,10 +29,9 @@ namespace AI.Entities
         protected List<Vector2Int> Path;
         protected FSMParameters parameters;
 
-        protected virtual void Init(int stateLength, int flagLength)
+        public virtual void Init(Vector2Int position)
         {
             parameters = new FSMParameters();
-            fsm = new FSM.FSM(stateLength, flagLength);
         }
 
         public virtual void UpdateMiner()

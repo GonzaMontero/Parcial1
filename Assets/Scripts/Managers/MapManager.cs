@@ -7,9 +7,9 @@ namespace AI.Managers
 {
     public class MapManager : MonoBehaviour
     {
+        [Header("Entity Useful Data")]
         public List<MineItem> AllMinesOnMap;
         public List<MineItem> AllWorkedMines;
-
         public static MapManager Instance;
 
         [Header("Points of Interest & Map Settings")]
@@ -17,51 +17,39 @@ namespace AI.Managers
         public int MinesCount;
         public Vector2Int MapSize;
 
+        [Header("Useful Prefabs")]
+        public MineItem MineItemPrefab;
+
         [Header("Parent Transforms")]
         public Transform MinesParents;
         public Transform WallParent;
 
         [Header("Easy Access Data")]
         private List<Vector2Int> buildingPos = new();
-        public List<Vector2Int> BuildingPos => buildingPos;
+       
+        public GridSlot[] Map;
 
-        private List<Vector2Int> minesPos = new();
-        public List<Vector2Int> MinesPos => minesPos;
+        public Vector2Int DepositPos;
 
-        private List<Vector2Int> minePositions;
-        public List<Vector2Int> MinePositions => minePositions;
-
-        private List<GameObject> minesList = new();
-        public List<GameObject> MinesList => minesList;
-
-        private GridSlot[] map;
-        public GridSlot[] Map => map;
-
-        private Vector2Int depositPos;
-        public Vector2Int DepositPos => depositPos;
-
-        public void Init(Vector2Int mapSize, GameObject mineGO)
+        private void Awake()
         {
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(this.gameObject);
+
             InitBuildings();
-            InitMap(mapSize);
+            InitMap(new Vector2Int(MapSize.x, MapSize.y));
 
             for (int i = 0; i < MinesCount; i++)
             {
-                SpawnMine(mineGO);
+                SpawnMine(MineItemPrefab);
             }
-
-            UpdateSectors();
         }
 
         private void InitBuildings()
         {
-            buildingPos.Add(depositPos);
-
-            for (int i = 0; i < minesList.Count; i++)
-            {
-                Vector2Int pos = new Vector2Int((int)minesList[i].transform.position.x, (int)minesList[i].transform.position.y);
-                buildingPos.Add(pos);
-            }
+            buildingPos.Add(DepositPos);
 
             for (int i = 0; i < WallParent.childCount; i++)
             {
@@ -73,7 +61,7 @@ namespace AI.Managers
 
         private void InitMap(Vector2Int mapSize)
         {
-            map = new GridSlot[mapSize.x * mapSize.y];
+            Map = new GridSlot[mapSize.x * mapSize.y];
             GridUtils.GridSize = new Vector2Int(mapSize.x, mapSize.y);
             int id = 0;
 
@@ -81,14 +69,14 @@ namespace AI.Managers
             {
                 for (int j = 0; j < mapSize.y; j++)
                 {
-                    map[id] = new GridSlot(id, new Vector2Int(j, i));
-                    map[id].SetWeight(Random.Range(1, 6));
+                    Map[id] = new GridSlot(id, new Vector2Int(j, i));
+                    Map[id].SetWeight(Random.Range(1, 6));
 
                     for (int k = 0; k < buildingPos.Count; k++)
                     {
-                        if (map[id].position == buildingPos[k])
+                        if (Map[id].position == buildingPos[k])
                         {
-                            map[id].currentState = SlotStates.Obstacle;
+                            Map[id].currentState = SlotStates.Obstacle;
                         }
                     }
 
@@ -97,7 +85,7 @@ namespace AI.Managers
             }
         }
 
-        private void SpawnMine(GameObject mineGO)
+        private void SpawnMine(MineItem mineGO)
         {
             int x = Random.Range(1, GridUtils.GridSize.x - 1);
             int y = Random.Range(1, GridUtils.GridSize.y - 1);
@@ -113,27 +101,15 @@ namespace AI.Managers
             }
 
             Vector3 posVec3 = new Vector3(pos.x, pos.y, 0);
+            Map[GridUtils.PositionToIndex(new Vector2Int((int)posVec3.x, (int)posVec3.y))].currentState = SlotStates.Obstacle;
+
             var go = Instantiate(mineGO, posVec3, Quaternion.identity, MinesParents);
+            go.MinePosition = new Vector2Int((int)posVec3.x, (int)posVec3.y);
+            AllMinesOnMap.Add(go);
 
-            minesList.Add(go);
+            AllMinesOnMap.Add(go);
             buildingPos.Add(pos);
-            minesPos.Add(pos);
         }
-
-        private GridSlot[] GetMap()
-        {
-            return map;
-        }
-
-        public void UpdateSectors()
-        {
-            List<(Vector2, float)> minesPos = new List<(Vector2, float)>();
-            foreach (var mine in minesList)
-            {
-                float weight = Random.Range(1, 6);
-                minesPos.Add((mine.transform.position, weight));
-            }
-        } 
     }
 }
 
