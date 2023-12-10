@@ -58,7 +58,7 @@ public class ReturnToBase : FSMAction
 
 
                 flocking.ToggleFlocking(true);
-                flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y);
+                flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
             }
             else if (Vector2.Distance(currentDestination,currentPos.Invoke()) < 0.1f)
             {
@@ -74,7 +74,7 @@ public class ReturnToBase : FSMAction
 
 
                     flocking.ToggleFlocking(true);
-                    flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y);
+                    flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
                 }
                 else
                 {
@@ -95,7 +95,7 @@ public class ReturnToBase : FSMAction
 
 
                     flocking.ToggleFlocking(true);
-                    flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y);
+                    flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
                 }
             }
         });
