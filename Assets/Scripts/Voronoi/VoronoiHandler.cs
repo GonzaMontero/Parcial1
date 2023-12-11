@@ -11,9 +11,6 @@ namespace AI.Voronoi
 
         private List<Dictionary< int /* mine id*/, int /*cost to mine*/>> possiblePathCosts;
 
-        private List<MineItem> allMinesOnMap => MapManager.Instance.AllMinesOnMap;
-        private List<MineItem> allWorkedMinesOnMap => MapManager.Instance.AllWorkedMines;
-
         private PathingAlternatives pathingAlternatives;
         #endregion
 
@@ -82,8 +79,8 @@ namespace AI.Voronoi
 
                     for (short m = 0; m < minesToCheck.Count; m++)
                     {
-                        mineIndex = GridUtils.PositionToIndex(new Vector2Int((int)minesToCheck[m].transform.position.x, 
-                            (int)minesToCheck[m].transform.position.y)); ;
+                        mineIndex = GridUtils.PositionToIndex(new Vector2Int((int)minesToCheck[m].MinePosition.x, 
+                            (int)minesToCheck[m].MinePosition.y)); ;
 
                         possiblePathCosts[id].TryGetValue(mineIndex, out int totalCost);
 

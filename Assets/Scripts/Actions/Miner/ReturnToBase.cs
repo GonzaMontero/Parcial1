@@ -14,16 +14,16 @@ public class ReturnToBase : FSMAction
     public override List<Action> OnEnterBehaviours(FSMParameters onEnterParameters)
     {
         EntityData currentData = onEnterParameters.Parameters[0] as EntityData;
-        Vector2Int currentPos = currentData.Position;
+        Vector2 currentPos = currentData.Position;
         Vector2Int baseHome = currentData.Deposit;
 
-        PathingAlternatives alternatives = onEnterParameters.Parameters[3] as PathingAlternatives;
+        PathingAlternatives alternatives = onEnterParameters.Parameters[2] as PathingAlternatives;
 
         List<Action> onEnterActions = new List<Action>();
         onEnterActions.Add(() =>
         {
-            onEnterParameters.Parameters[4] = alternatives.GetPath(MapManager.Instance.Map, 
-                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos)], 
+            onEnterParameters.Parameters[3] = alternatives.GetPath(MapManager.Instance.Map, 
+                MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))], 
                 MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
         });
 
@@ -33,13 +33,13 @@ public class ReturnToBase : FSMAction
     public override List<Action> OnExecuteBehaviours(FSMParameters onExecuteParameters)
     {
         EntityData currentData = onExecuteParameters.Parameters[0] as EntityData;
-        Vector2Int currentPos = currentData.Position;
+        Vector2 currentPos = currentData.Position;
         Vector2Int baseHome = currentData.Deposit;
         bool shouldCalculatePathAgain = currentData.shouldPathAgain;
 
-        FlockingAlgorithm flocking = onExecuteParameters.Parameters[2] as FlockingAlgorithm;
-        PathingAlternatives alternatives = onExecuteParameters.Parameters[3] as PathingAlternatives;
-        List<Vector2Int> path = onExecuteParameters.Parameters[4] as List<Vector2Int>;
+        FlockingAlgorithm flocking = onExecuteParameters.Parameters[1] as FlockingAlgorithm;
+        PathingAlternatives alternatives = onExecuteParameters.Parameters[2] as PathingAlternatives;
+        List<Vector2Int> path = onExecuteParameters.Parameters[3] as List<Vector2Int>;
 
 
         List<Action> onExecuteActions = new List<Action>();
@@ -48,7 +48,7 @@ public class ReturnToBase : FSMAction
             if (path == null)
             {
                 path = alternatives.GetPath(MapManager.Instance.Map,
-                MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos)],
+                MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x,(int)currentPos.y))],
                 MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
 
                 positionOnPath = 0;
@@ -69,7 +69,7 @@ public class ReturnToBase : FSMAction
                 if (shouldCalculatePathAgain)
                 {
                     path = alternatives.GetPath(MapManager.Instance.Map,
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(currentPos)],
+                    MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))],
                     MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
 
                     positionOnPath = 0;

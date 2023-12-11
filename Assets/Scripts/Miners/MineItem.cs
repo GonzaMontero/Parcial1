@@ -38,6 +38,16 @@ public class MineItem : MonoBehaviour
         return 0;
     }
 
+    public void Update()
+    {
+        if (Empty)
+        {
+            MapManager.Instance.AllMinesOnMap.Remove(this);
+            Destroy(gameObject);
+            OnMineDrained?.Invoke(MapManager.Instance.AllMinesOnMap.Count > 0, MapManager.Instance.AllWorkedMines.Count > 0);
+        }
+    }
+
     public bool TryEat()
     {
         if (FoodAmount > 0)
@@ -52,9 +62,6 @@ public class MineItem : MonoBehaviour
     private void SetEmpty()
     {
         Empty = true;
-        //MapManager.instance.Mines.remove(this);
-        Destroy(gameObject);
-        //OnMineDrained?.Invoke(MapManager.instance.minesavailable.count > 0, MapManager.instance.minesworked.count > 0);
     }
 
     private void SetMineralAmount(int amount)

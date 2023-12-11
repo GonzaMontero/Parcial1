@@ -27,6 +27,17 @@ public class MineState : FSMAction
         List<Action> onExecuteActions = new List<Action>();
         onExecuteActions.Add(() =>
         {
+            if(MapManager.Instance.GetItemOnPosition(data.Target) != null)
+            {
+                data.targetMine = MapManager.Instance.GetItemOnPosition(data.Target);
+                onExecuteParameters.Parameters[0] = data;
+            }
+            else
+            {
+                data.targetMine = null;
+                onExecuteParameters.Parameters[0] = data;
+            }
+
             if(resourcesMined >= 15 || MapManager.Instance.AllMinesOnMap.Count <= 0 || MinerManager.Instance.ReturnToBase)
             {
                 SwapFlags((int)MinerFlags.OnInventoryFull);
@@ -36,18 +47,14 @@ public class MineState : FSMAction
             {
                 MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.UpdateActiveVoronoi(MapManager.Instance.AllMinesOnMap);
                 data.Target = MapManager.Instance.Map[MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.GetClosestMine(
-                    GridUtils.PositionToIndex(data.Position))].position;
+                    GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y)))].position;
                 onExecuteParameters.Parameters[0] = data;
 
-                path = pathingAlternatives.GetPath(MapManager.Instance.Map, MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                path = pathingAlternatives.GetPath(MapManager.Instance.Map, MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
                     MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int totalCost);
                 onExecuteParameters.Parameters[3] = path;
             }
-            if(Vector2.Distance(data.Position, data.Target) > 0.6f)
-            {
-                SwapFlags((int)MinerFlags.OnMineDepleted);
-            }
-            if(timesMined < 3 && Vector2.Distance(data.Position, data.Target) < 0.5f)
+            if(timesMined < 3)
             {
                 resourcesMined += data.targetMine.TryMine(1);
                 timesMined += 1;

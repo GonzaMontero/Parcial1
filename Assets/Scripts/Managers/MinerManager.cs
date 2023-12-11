@@ -66,6 +66,18 @@ namespace AI.Managers
 
         public void Update()
         {
+            for(short i = 0; i < PopulationTypes.Count; i++)
+            {
+                foreach(var p in PopulationTypes[i].PopulationBag)
+                {
+                    if (p.updatePos)
+                    {
+                        p.transform.position = p.GetData().Position;
+                        p.updatePos = false;
+                    }
+                }
+            }
+
             for(short i=0; i<PopulationTypes.Count; i++)
             {
                 Parallel.ForEach(PopulationTypes[i].PopulationBag, ParallelOptions, currentPopulation =>

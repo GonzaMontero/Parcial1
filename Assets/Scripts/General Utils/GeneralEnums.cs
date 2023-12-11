@@ -15,6 +15,18 @@ public enum MinerFlags
     OnReachDeposit
 }
 
+public enum FoodStates
+{
+    Supply,
+    Return
+}
+
+public enum FoodFlags
+{
+    OnReturnToDeposit,
+    OnSupply
+}
+
 public enum SlotStates
 {
     Open,

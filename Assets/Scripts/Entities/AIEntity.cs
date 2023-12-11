@@ -8,7 +8,7 @@ namespace AI.Entities
     public class EntityData
     {
         public bool shouldPathAgain;
-        public Vector2Int Position;
+        public Vector2 Position;
         public Vector2Int Target;
         public Vector2Int Deposit;
         public MineItem targetMine;
@@ -28,6 +28,7 @@ namespace AI.Entities
         protected FSM.FSM fsm;
         protected List<Vector2Int> Path;
         protected FSMParameters parameters;
+        public bool updatePos;
 
         public virtual void Init(Vector2Int position)
         {
@@ -37,6 +38,11 @@ namespace AI.Entities
         public virtual void UpdateMiner()
         {
             fsm.Update();
+        }
+
+        public EntityData GetData()
+        {
+            return data;
         }
     }
 }

@@ -9,7 +9,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class HeadToMine : FSMAction
 {
-    public int positionOnPath;
+    public int positionOnPath = 0;
     public Vector3 currentDestination;
 
     public override List<Action> OnEnterBehaviours(FSMParameters onEnterParameters)
@@ -22,16 +22,18 @@ public class HeadToMine : FSMAction
         {
             MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.UpdateActiveVoronoi(MapManager.Instance.AllMinesOnMap);
             data.Target = MapManager.Instance.Map[MinerManager.Instance.PopulationTypes[0].PopulationVoronoiHandler.GetClosestMine(
-                GridUtils.PositionToIndex(data.Position))].position;
+                GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y)))].position;
             onEnterParameters.Parameters[0] = data;
 
             List<Vector2Int> pathToMine = new List<Vector2Int>();
 
             pathToMine = alternatives.GetPath(MapManager.Instance.Map,
-                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
                 MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int totalCost);
 
             onEnterParameters.Parameters[3] = pathToMine;
+
+            currentDestination = new Vector3(pathToMine[positionOnPath].x, pathToMine[positionOnPath].y, 0);
         });
 
         return onEnterActions;
@@ -51,7 +53,7 @@ public class HeadToMine : FSMAction
             if (path == null)
             {
                 path = alternatives.GetPath(MapManager.Instance.Map,
-                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
                 MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int var);
 
                 onExecuteParameters.Parameters[3] = path;
@@ -69,12 +71,12 @@ public class HeadToMine : FSMAction
                 flocking.ToggleFlocking(true);
                 flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
             }
-            else if(Vector2.Distance(data.Position, data.Target) < 1f)
+            else if(Vector2.Distance(currentDestination, data.Position) < 0.1f)
             {
                 if (data.shouldPathAgain)
                 {
                     path = alternatives.GetPath(MapManager.Instance.Map,
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(data.Position)],
+                    MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
                     MapManager.Instance.Map[GridUtils.PositionToIndex(data.Target)], out int var);
 
                     onExecuteParameters.Parameters[3] = path;
@@ -115,11 +117,11 @@ public class HeadToMine : FSMAction
 
     public override List<Action> OnExitBehaviours(FSMParameters onExitParameters)
     {
-        throw new NotImplementedException();
+        return new List<Action>();
     }
 
     public override void SwapFlags(int flags)
     {
-        throw new NotImplementedException();
+        OnSetFlag?.Invoke(flags);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -85,6 +86,11 @@ namespace AI.Managers
             }
         }
 
+        public MineItem GetItemOnPosition(Vector2Int position)
+        {
+            return AllMinesOnMap.Single(m => m.MinePosition == position);
+        }
+
         private void SpawnMine(MineItem mineGO)
         {
             int x = Random.Range(1, GridUtils.GridSize.x - 1);
@@ -105,8 +111,6 @@ namespace AI.Managers
 
             var go = Instantiate(mineGO, posVec3, Quaternion.identity, MinesParents);
             go.MinePosition = new Vector2Int((int)posVec3.x, (int)posVec3.y);
-            AllMinesOnMap.Add(go);
-
             AllMinesOnMap.Add(go);
             buildingPos.Add(pos);
         }
