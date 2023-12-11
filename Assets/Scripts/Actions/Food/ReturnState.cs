@@ -16,6 +16,8 @@ namespace AI.FSM
         public override List<Action> OnEnterBehaviours(FSMParameters onEnterParameters)
         {
             EntityData data = onEnterParameters.Parameters[0] as EntityData;
+            Vector2 currentPos = data.Position;
+            Vector2Int baseHome = data.Deposit;
             PathingAlternatives alternatives = onEnterParameters.Parameters[2] as PathingAlternatives;
             FlockingAlgorithm flocking = onEnterParameters.Parameters[1] as FlockingAlgorithm;
             List<Vector2Int> path = onEnterParameters.Parameters[3] as List<Vector2Int>;
@@ -27,8 +29,8 @@ namespace AI.FSM
             onEnterBehaviors.Add(() =>
             {
                 path = alternatives.GetPath(map,
-                map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
-                map[GridUtils.PositionToIndex(data.Deposit)]);
+                map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))],
+                map[GridUtils.PositionToIndex(baseHome)]);
 
                 onEnterParameters.Parameters[3] = path;
 
@@ -108,7 +110,8 @@ namespace AI.FSM
                         {
                             path = null;
                             onExecuteParameters.Parameters[4] = 10;
-                            if (MapManager.Instance.AllWorkedMines.Count > 0)
+
+                            if (MapManager.Instance.AllWorkedMines.Count > 0 && !MinerManager.Instance.ReturnToBase)
                                 SwapFlags((int)FoodFlags.OnSupply);
                             else
                                 SwapFlags((int)FoodFlags.OnIdle);

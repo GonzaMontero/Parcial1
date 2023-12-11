@@ -23,14 +23,12 @@ namespace AI.Entities
         {
             MinerManager.OnReturnToBaseCalled += (bool shouldReturn) =>
             {
-                if (shouldReturn)
-                {
-                    previousStateIndex = fsm.GetCurrentState();
-                    fsm.ForceCurrentState((int)FoodStates.Return);
-                }
+                if(!shouldReturn)
+                    fsm.SetFlag((int)FoodFlags.OnEmergency);
                 else
                 {
-                    fsm.ForceCurrentState(previousStateIndex);
+                    if (MapManager.Instance.AllWorkedMines.Count > 0)
+                        fsm.SetFlag((int)FoodFlags.OnSupply);
                 }
             };
 
@@ -41,12 +39,16 @@ namespace AI.Entities
             parameters = new FSM.FSMParameters();
 
             data = new EntityData();
+
             data.Position = position;
             data.Deposit = new Vector2Int(MapManager.Instance.MinerSpawnPosition.x, MapManager.Instance.MinerSpawnPosition.y);
 
             fsm = new FSM.FSM(Enum.GetValues(typeof(FoodStates)).Length, Enum.GetValues(typeof(FoodFlags)).Length);
             fsm.SetRelation((int)FoodStates.Supply, (int)FoodFlags.OnReturnToDeposit, (int)FoodStates.Return);
             fsm.SetRelation((int)FoodStates.Return, (int)FoodFlags.OnSupply, (int)FoodStates.Supply);
+            fsm.SetRelation((int)FoodStates.Idle, (int)FoodFlags.OnSupply, (int)FoodStates.Supply);
+            fsm.SetRelation((int)FoodStates.Supply, (int)FoodFlags.OnEmergency, (int)FoodStates.Return);
+            fsm.SetRelation((int)FoodStates.Return, (int)FoodFlags.OnEmergency, (int)FoodStates.Idle);
 
             parameters.Parameters = new object[6]
             {

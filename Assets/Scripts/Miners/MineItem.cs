@@ -61,6 +61,7 @@ public class MineItem : MonoBehaviour
 
         if(workingMiners <= 0)
         {
+            Worked = false;
             workingMiners = 0;
             MapManager.Instance.AllWorkedMines.Remove(this);
             OnMineEnded?.Invoke();

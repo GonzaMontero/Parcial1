@@ -28,7 +28,8 @@ public enum FoodFlags
 {
     OnReturnToDeposit,
     OnSupply,
-    OnIdle
+    OnIdle,
+    OnEmergency
 }
 
 public enum SlotStates

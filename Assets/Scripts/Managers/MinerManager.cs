@@ -146,7 +146,7 @@ namespace AI.Managers
 
                     Parallel.ForEach(PopulationTypes[1].PopulationBag, ParallelOptions, currentPopulation =>
                     {
-                        currentPopulation.fsm.ForceCurrentState((int)FoodStates.Supply);
+                        currentPopulation.fsm.SetFlag((int)FoodFlags.OnSupply);
                     });
                 }
                 else
@@ -171,7 +171,7 @@ namespace AI.Managers
 
                 Parallel.ForEach(PopulationTypes[1].PopulationBag, ParallelOptions, currentPopulation =>
                 {
-                    currentPopulation.fsm.ForceCurrentState((int)FoodStates.Supply);
+                    currentPopulation.fsm.SetFlag((int)FoodFlags.OnSupply);
                 });
             };
 
@@ -189,7 +189,7 @@ namespace AI.Managers
 
                 Parallel.ForEach(PopulationTypes[1].PopulationBag, ParallelOptions, currentPopulation =>
                 {
-                    currentPopulation.fsm.ForceCurrentState((int)FoodStates.Return);
+                    currentPopulation.fsm.SetFlag((int)FoodFlags.OnReturnToDeposit);
                 });
             };
         }
