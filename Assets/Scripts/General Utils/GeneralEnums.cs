@@ -2,7 +2,8 @@ public enum MinerStates
 {
     Mine,
     Return,
-    Collect
+    Collect,
+    Idle
 }
 
 public enum MinerFlags
@@ -12,19 +13,22 @@ public enum MinerFlags
     OnInventoryFull,
     OnMineDepleted,
     OnEmergency,
-    OnReachDeposit
+    OnReachDeposit,
+    OnIdle
 }
 
 public enum FoodStates
 {
     Supply,
-    Return
+    Return,
+    Idle
 }
 
 public enum FoodFlags
 {
     OnReturnToDeposit,
-    OnSupply
+    OnSupply,
+    OnIdle
 }
 
 public enum SlotStates

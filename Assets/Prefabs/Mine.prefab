@@ -98,7 +98,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MinePosition: {x: 0, y: 0}
-  FoodAmount: 20
+  MineWeight: 0
+  FoodAmount: 3
   MineralAmount: 20
   Worked: 0
   Empty: 0

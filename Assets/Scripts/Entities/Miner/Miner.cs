@@ -1,3 +1,4 @@
+using AI.FSM;
 using AI.Managers;
 using System;
 using System.Collections;
@@ -22,10 +23,15 @@ namespace AI.Entities
 
         public Vector2 CurrentPos;
         public Vector2Int CurrentMine;
+
+        int previousStateIndex;
         
         public override void Init(Vector2Int position)
         {
-            MinerManager.OnReturnToBaseCalled += () => fsm.ForceCurrentState((int)MinerStates.Return);
+            MinerManager.OnReturnToBaseCalled += (bool shouldReturn) =>
+            {
+               fsm.SetFlag((int)MinerFlags.OnEmergency);
+            };
 
             flockingMiners = GetComponent<FlockingAlgorithm>();
             pathingAlternatives = new PathingAlternatives();
@@ -33,7 +39,7 @@ namespace AI.Entities
             data = new EntityData();
 
             data.Position = position;
-            data.Deposit = MapManager.Instance.DepositPos;
+            data.Deposit = new Vector2Int(MapManager.Instance.MinerSpawnPosition.x, MapManager.Instance.MinerSpawnPosition.y);
 
             fsm = new FSM.FSM(Enum.GetValues(typeof(MinerStates)).Length, Enum.GetValues(typeof(MinerFlags)).Length);
 
@@ -42,19 +48,23 @@ namespace AI.Entities
             fsm.SetRelation((int)MinerStates.Return, (int)MinerFlags.OnFindTarget, (int)MinerStates.Collect);
             fsm.SetRelation((int)MinerStates.Mine, (int)MinerFlags.OnMineDepleted, (int)MinerStates.Collect);
             fsm.SetRelation((int)MinerStates.Collect, (int)MinerFlags.OnEmergency, (int)MinerStates.Return);
+            fsm.SetRelation((int)MinerStates.Mine, (int)MinerFlags.OnEmergency, (int)MinerStates.Return);
+            fsm.SetRelation((int)MinerStates.Idle, (int)MinerFlags.OnEmergency, (int)MinerStates.Collect);
+            fsm.SetRelation((int)MinerStates.Return, (int)MinerFlags.OnEmergency, (int)MinerStates.Collect);
 
             parameters = new FSM.FSMParameters();
 
             flockingMiners.Init(UpdatePos, GetPos);
 
-            parameters.Parameters = new object[6]
+            parameters.Parameters = new object[7]
             {
                 data,
                 flockingMiners,
                 pathingAlternatives,
                 Path,
                 timesMined,
-                resourcesMined
+                resourcesMined,
+                map
             };
 
             fsm.SetAction<ReturnToBase>((int)MinerStates.Return, parameters, parameters);
@@ -62,6 +72,8 @@ namespace AI.Entities
             fsm.SetAction<HeadToMine>((int)MinerStates.Collect, parameters, parameters);
 
             fsm.SetAction<MineState>((int)MinerStates.Mine, parameters, parameters);
+
+            fsm.SetAction<Idle>((int)MinerStates.Idle, parameters, parameters);
 
             fsm.ForceCurrentState((int)MinerStates.Collect);
         }
@@ -85,6 +97,6 @@ namespace AI.Entities
         private void OnUpdateWeight()
         {
             data.shouldPathAgain = true;
-        }
+        }        
     }
 }

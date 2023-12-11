@@ -10,8 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 7618025556983166971}
   - component: {fileID: 7618025556983166968}
+  - component: {fileID: 1764223295468520536}
+  - component: {fileID: 6039750788772750054}
   m_Layer: 0
-  m_Name: Rest
+  m_Name: Food
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -84,3 +86,40 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1764223295468520536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7618025556983166969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db022e323f8c8984a92c6530736aab0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatePos: 0
+  CurrentPos: {x: 0, y: 0}
+  CurrentMine: {x: 0, y: 0}
+--- !u!114 &6039750788772750054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7618025556983166969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e75379ebfb02727419b01cdeeeed5a6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BaseRotation: {x: 0, y: 0, z: 0}
+  MaxSpeed: 5
+  MaxForce: 1
+  CheckRadius: 0.2
+  SeparationMultiplier: 1
+  CohesionMultiplier: 0.1
+  AlignmentMultiplier: 0.1
+  DirectionMultiplier: 1
+  velocity: {x: 0, y: 0}
+  acceleration: {x: 0, y: 0}

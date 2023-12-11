@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace AI.Managers
@@ -26,7 +25,7 @@ namespace AI.Managers
         public Transform WallParent;
 
         [Header("Easy Access Data")]
-        private List<Vector2Int> buildingPos = new();
+        public List<Vector2Int> BuildingsPos = new();
        
         public GridSlot[] Map;
 
@@ -46,17 +45,27 @@ namespace AI.Managers
             {
                 SpawnMine(MineItemPrefab);
             }
+
+            int obstacleTiles = 0;
+            for(short i = 0; i < Map.Length; i++)
+            {
+                if (Map[i].currentState == SlotStates.Obstacle)
+                {
+                    obstacleTiles++;
+                }
+            }
+            Debug.Log("Obstacles" + obstacleTiles.ToString());
         }
 
         private void InitBuildings()
         {
-            buildingPos.Add(DepositPos);
+            BuildingsPos.Add(DepositPos);
 
             for (int i = 0; i < WallParent.childCount; i++)
             {
                 Transform wall = WallParent.GetChild(i);
                 Vector2Int pos = new Vector2Int((int)wall.transform.position.x, (int)wall.transform.position.y);
-                buildingPos.Add(pos);
+                BuildingsPos.Add(pos);
             }
         }
 
@@ -73,9 +82,9 @@ namespace AI.Managers
                     Map[id] = new GridSlot(id, new Vector2Int(j, i));
                     Map[id].SetWeight(Random.Range(1, 6));
 
-                    for (int k = 0; k < buildingPos.Count; k++)
+                    for (int k = 0; k < BuildingsPos.Count; k++)
                     {
-                        if (Map[id].position == buildingPos[k])
+                        if (Map[id].position == BuildingsPos[k])
                         {
                             Map[id].currentState = SlotStates.Obstacle;
                         }
@@ -88,7 +97,13 @@ namespace AI.Managers
 
         public MineItem GetItemOnPosition(Vector2Int position)
         {
-            return AllMinesOnMap.Single(m => m.MinePosition == position);
+            for(short i = 0; i < AllMinesOnMap.Count; i++)
+            {
+                if (AllMinesOnMap[i].MinePosition == position)
+                    return AllMinesOnMap[i];
+            }
+
+            return null;
         }
 
         private void SpawnMine(MineItem mineGO)
@@ -97,9 +112,9 @@ namespace AI.Managers
             int y = Random.Range(1, GridUtils.GridSize.y - 1);
             Vector2Int pos = new Vector2Int(x, y);
 
-            for (int i = 0; i < buildingPos.Count; i++)
+            for (int i = 0; i < BuildingsPos.Count; i++)
             {
-                if (pos == buildingPos[i])
+                if (pos == BuildingsPos[i])
                 {
                     SpawnMine(mineGO);
                     return;
@@ -112,7 +127,7 @@ namespace AI.Managers
             var go = Instantiate(mineGO, posVec3, Quaternion.identity, MinesParents);
             go.MinePosition = new Vector2Int((int)posVec3.x, (int)posVec3.y);
             AllMinesOnMap.Add(go);
-            buildingPos.Add(pos);
+            BuildingsPos.Add(pos);
         }
     }
 }

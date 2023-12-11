@@ -19,28 +19,28 @@ public class PathingAlternatives {
     private List<int> closedSlotsID = new List<int>();
     private Vector2Int destinationPosition;
 
-    public List<Vector2Int> GetPath(GridSlot[] grid, GridSlot origin, GridSlot destination, out int totalCost)
+    public List<Vector2Int> GetPath(GridSlot[] grid, GridSlot origin, GridSlot destination)
     {
         openSlotsID.Add(origin.ID);
         destinationPosition = destination.position;
 
         GridSlot currentSlot = origin;
-        while(currentSlot.position != destination.position) //Check if we did not reach the destination yet
+
+        while (currentSlot.position != destination.position) //Check if we did not reach the destination yet
         {
             currentSlot = GetNextSlot(grid, currentSlot); // Get next slot from our currentSlot
 
-            if(currentSlot == null) //if currentslot does not exist then the path by extension does not either
+            if (currentSlot == null) //if currentslot does not exist then the path by extension does not either
             {
-                totalCost = 0;
                 return new List<Vector2Int>();
             }
 
-            for(int i = 0; i < currentSlot.adjacentPositionsID.Count; i++) //for each position adjacent to our cell we check if it is available
+            for (int i = 0; i < currentSlot.adjacentPositionsID.Count; i++) //for each position adjacent to our cell we check if it is available
             {
                 if (currentSlot.adjacentPositionsID[i] != GridUtils.invalidPosition)
                 {
                     if (grid[currentSlot.adjacentPositionsID[i]].currentState == SlotStates.Ready) //if available we open it and add it to
-                                                                                                           //the list of possible nodes
+                                                                                                   //the list of possible nodes
                     {
                         grid[currentSlot.adjacentPositionsID[i]].Open(currentSlot.ID, currentSlot.totalWeight);
                         openSlotsID.Add(grid[currentSlot.adjacentPositionsID[i]].ID);
@@ -53,11 +53,10 @@ public class PathingAlternatives {
             closedSlotsID.Add(currentSlot.ID);
         }
 
-        totalCost = currentSlot.totalWeight;
-        List<Vector2Int> path = GeneratePath(grid, currentSlot); //generate a path with the closed slots and current position        
+        List<Vector2Int> path = GeneratePath(grid, currentSlot); //generate a path with the closed slots and current position
 
         //reset all slots and return the finished path
-        foreach(GridSlot slot in grid)
+        foreach (GridSlot slot in grid)
         {
             slot.Reset();
             openSlotsID.Clear();
@@ -67,7 +66,7 @@ public class PathingAlternatives {
         return path;
     }
 
-    private List<Vector2Int> GeneratePath(GridSlot[] grid,  GridSlot currentSlot)
+    private List<Vector2Int> GeneratePath(GridSlot[] grid, GridSlot currentSlot)
     {
         List<Vector2Int> path = new List<Vector2Int>();
 
@@ -86,7 +85,7 @@ public class PathingAlternatives {
 
     private GridSlot GetNextSlot(GridSlot[] grid, GridSlot currentSlot)
     {
-        switch(currentPathingTypes) //depending on which algorithm we use, we get a different position
+        switch (currentPathingTypes) //depending on which algorithm we use, we get a different position
         {
             case PathingTypes.BreadthFirst:
                 return grid[openSlotsID[0]];
@@ -116,7 +115,7 @@ public class PathingAlternatives {
 
                     for (int i = 0; i < openSlotsID.Count; i++)
                     {
-                        if (grid[openSlotsID[i]].totalWeight + GetManhattanDistance(grid[openSlotsID[i]].position, destinationPosition) 
+                        if (grid[openSlotsID[i]].totalWeight + GetManhattanDistance(grid[openSlotsID[i]].position, destinationPosition)
                             < currentMaxWeight)
                         {
                             n = grid[openSlotsID[i]];

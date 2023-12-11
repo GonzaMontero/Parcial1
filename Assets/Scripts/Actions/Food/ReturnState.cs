@@ -11,21 +11,39 @@ namespace AI.FSM
     {
         public int positionOnPath;
         public Vector3 currentDestination;
-
+        public GridSlot[] map;
 
         public override List<Action> OnEnterBehaviours(FSMParameters onEnterParameters)
         {
             EntityData data = onEnterParameters.Parameters[0] as EntityData;
             PathingAlternatives alternatives = onEnterParameters.Parameters[2] as PathingAlternatives;
+            FlockingAlgorithm flocking = onEnterParameters.Parameters[1] as FlockingAlgorithm;
             List<Vector2Int> path = onEnterParameters.Parameters[3] as List<Vector2Int>;
 
             List<Action> onEnterBehaviors = new List<Action>();
 
+            map = onEnterParameters.Parameters[5] as GridSlot[];
+
             onEnterBehaviors.Add(() =>
             {
-                onEnterParameters.Parameters[3] = alternatives.GetPath(MapManager.Instance.Map,
-                MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
-                MapManager.Instance.Map[GridUtils.PositionToIndex(data.Deposit)], out int var);
+                path = alternatives.GetPath(map,
+                map[GridUtils.PositionToIndex(new Vector2Int((int)data.Position.x, (int)data.Position.y))],
+                map[GridUtils.PositionToIndex(data.Deposit)]);
+
+                onEnterParameters.Parameters[3] = path;
+
+                positionOnPath = 0;
+
+                if (positionOnPath > path.Count - 1)
+                {
+                    path = null;
+                    return;
+                }
+
+                currentDestination = new Vector3(path[positionOnPath].x, path[positionOnPath].y, 0);
+
+                flocking.ToggleFlocking(true);
+                flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
             });
 
             return onEnterBehaviors;
@@ -42,15 +60,16 @@ namespace AI.FSM
             PathingAlternatives alternatives = onExecuteParameters.Parameters[2] as PathingAlternatives;
             List<Vector2Int> path = onExecuteParameters.Parameters[3] as List<Vector2Int>;
 
+            map = onExecuteParameters.Parameters[5] as GridSlot[];
 
             List<Action> onExecuteActions = new List<Action>();
             onExecuteActions.Add(() =>
             {
                 if (path == null)
                 {
-                    path = alternatives.GetPath(MapManager.Instance.Map,
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))],
-                    MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
+                        path = alternatives.GetPath(map,
+                        map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))],
+                        map[GridUtils.PositionToIndex(baseHome)]);
 
                     positionOnPath = 0;
 
@@ -69,9 +88,9 @@ namespace AI.FSM
                 {
                     if (shouldCalculatePathAgain)
                     {
-                        path = alternatives.GetPath(MapManager.Instance.Map,
-                        MapManager.Instance.Map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))],
-                        MapManager.Instance.Map[GridUtils.PositionToIndex(baseHome)], out int var);
+                        path = alternatives.GetPath(map,
+                        map[GridUtils.PositionToIndex(new Vector2Int((int)currentPos.x, (int)currentPos.y))],
+                        map[GridUtils.PositionToIndex(baseHome)]);
 
                         positionOnPath = 0;
 
@@ -85,21 +104,18 @@ namespace AI.FSM
                     {
                         positionOnPath++;
 
-                        if (positionOnPath >= path.Count - 1 && !MinerManager.Instance.ReturnToBase)
+                        if (positionOnPath >= path.Count - 1)
                         {
                             path = null;
                             onExecuteParameters.Parameters[4] = 10;
-                            SwapFlags((int)FoodFlags.OnSupply);
-                            return;
-                        }
-                        else if (MinerManager.Instance.ReturnToBase)
-                        {
+                            if (MapManager.Instance.AllWorkedMines.Count > 0)
+                                SwapFlags((int)FoodFlags.OnSupply);
+                            else
+                                SwapFlags((int)FoodFlags.OnIdle);
                             return;
                         }
 
                         currentDestination = new Vector3(path[positionOnPath].x, path[positionOnPath].y, 0);
-
-
                         flocking.ToggleFlocking(true);
                         flocking.UpdateTarget(new Vector2Int((int)currentDestination.x, (int)currentDestination.y));
                     }

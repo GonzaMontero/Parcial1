@@ -16,49 +16,49 @@ namespace AI.Voronoi
 
         public void SetupVoronoi(List<MineItem> minesToSector)
         {
-            closestMineToNode = new List<int>();
-            possiblePathCosts = new List<Dictionary< int , int>>();
+            //closestMineToNode = new List<int>();
+            //possiblePathCosts = new List<Dictionary< int , int>>();
 
-            pathingAlternatives = new PathingAlternatives();
+            //pathingAlternatives = new PathingAlternatives();
 
-            int id = 0;
-            int tempCheapestDomain = int.MaxValue;
-            int tempCheapestCost = int.MaxValue;
+            //int id = 0;
+            //int tempCheapestDomain = int.MaxValue;
+            //int tempCheapestCost = int.MaxValue;
 
-            int mineIndex = 0;
+            //int mineIndex = 0;
 
-            for (short x = 0; x < GridUtils.GridSize.x; x++)
-            {
-                for(short y = 0; y < GridUtils.GridSize.y; y++)
-                {
-                    tempCheapestDomain = int.MaxValue;
-                    tempCheapestCost = int.MaxValue;
+            //for (short x = 0; x < GridUtils.GridSize.x; x++)
+            //{
+            //    for(short y = 0; y < GridUtils.GridSize.y; y++)
+            //    {
+            //        tempCheapestDomain = int.MaxValue;
+            //        tempCheapestCost = int.MaxValue;
 
-                    for(short m = 0; m < minesToSector.Count; m++)
-                    {
-                        mineIndex = GridUtils.PositionToIndex(new Vector2Int((int)minesToSector[m].transform.position.x, 
-                            (int)minesToSector[m].transform.position.y));
+            //        for(short m = 0; m < minesToSector.Count; m++)
+            //        {
+            //            mineIndex = GridUtils.PositionToIndex(new Vector2Int((int)minesToSector[m].transform.position.x, 
+            //                (int)minesToSector[m].transform.position.y));
 
-                        pathingAlternatives.GetPath(MapManager.Instance.Map, MapManager.Instance.Map[id],
-                        MapManager.Instance.Map[mineIndex], out int totalCost);
+            //            pathingAlternatives.GetPath(MapManager.Instance.Map, MapManager.Instance.Map[id],
+            //            MapManager.Instance.Map[mineIndex]);
 
-                        if(totalCost < tempCheapestCost)
-                        {
-                            tempCheapestCost = totalCost;
-                            tempCheapestDomain = mineIndex;
-                        }
+            //            if(totalCost < tempCheapestCost)
+            //            {
+            //                tempCheapestCost = totalCost;
+            //                tempCheapestDomain = mineIndex;
+            //            }
 
-                        var dict = new Dictionary<int, int>();
-                        dict.Add(mineIndex, totalCost);
+            //            var dict = new Dictionary<int, int>();
+            //            dict.Add(mineIndex, totalCost);
 
-                        possiblePathCosts.Add(dict);
-                    }
+            //            possiblePathCosts.Add(dict);
+            //        }
 
-                    closestMineToNode.Add(tempCheapestDomain);
+            //        closestMineToNode.Add(tempCheapestDomain);
 
-                    id++;
-                }
-            }
+            //        id++;
+            //    }
+            //}
         }
 
         public void UpdateActiveVoronoi(List<MineItem> minesToCheck)
